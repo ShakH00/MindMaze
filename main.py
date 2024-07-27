@@ -119,9 +119,9 @@ def display_message(message):
                 sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, back_rect):
-                    running = False  # Go back to the main screen
+                    running = False
 
-        # Fill the screen with white
+        # Background
         screen.fill(white)
 
         # Display message
@@ -134,7 +134,7 @@ def display_message(message):
         pygame.draw.rect(screen, white, back_rect)
         screen.blit(back_text, (50, 50))
 
-        # Check if the mouse is over the back button and change the cursor to a pointer
+        # Change the cursor to a pointer on back button
         if is_over(mouse_pos, back_rect):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
             cursor_changed = True
