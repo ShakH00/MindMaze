@@ -1,4 +1,3 @@
-#HI test 1
 import pygame
 import sys
 from pygame.locals import *
