@@ -156,9 +156,8 @@ def main_game(level):
 
         # Draw back button
         back_text = font_small.render("Back", True, black)
-        back_rect = pygame.Rect(50, 50, back_text.get_width(), back_text.get_height())
-        pygame.draw.rect(screen, white, back_rect)
-        screen.blit(back_text, (50, 50))
+        back_rect = pygame.Rect(800, 50, back_text.get_width(), back_text.get_height())
+        screen.blit(back_text, (800, 50))
 
         # Update the display
         pygame.display.flip()
@@ -180,14 +179,17 @@ def main_screen():
                 sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, happy_rect):
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                     main_game("happy")
                 elif is_over(mouse_pos, sad_rect):
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                     main_game("sad")
                 elif is_over(mouse_pos, angry_rect):
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                     main_game("angry")
                 elif is_over(mouse_pos, neutral_rect):
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                     main_game("neutral")
-
         # Fill the screen with the background image
         background_image = pygame.image.load("Graphics/bg1.png")
         screen.blit(background_image, (0, 0))
@@ -236,7 +238,7 @@ def main_screen():
         screen.blit(font_tiny.render("Neutral", True, black), (emoji_positions["neutral"][0] + (emoji_size[0] // 2 - font_tiny.render("Neutral", True, black).get_width() // 2), emoji_positions["neutral"][1] + emoji_size[1] + 5))
 
         # Change the cursor to a pointer on hover
-        if any(is_over(mouse_pos, pygame.Rect(emoji_positions[emoji_key], emoji_size)) for emoji_key in emoji_positions.keys()):
+        if is_over(mouse_pos, happy_rect) or is_over(mouse_pos, sad_rect) or is_over(mouse_pos, angry_rect) or is_over(mouse_pos, neutral_rect):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
             cursor_changed = True
 
@@ -265,20 +267,15 @@ def display_message(message):
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, back_rect):
                     running = False
-                    main_screen()
 
         # Background
         screen.fill(white)
 
-        # Display message
-        message_text = font.render(message, True, black)
-        screen.blit(message_text, (screen_width // 2 - message_text.get_width() // 2, screen_height // 2 - message_text.get_height() // 2))
-
         # Draw back button
         back_text = font_small.render("Back", True, black)
-        back_rect = pygame.Rect(50, 50, back_text.get_width(), back_text.get_height())
+        back_rect = pygame.Rect(800, 50, back_text.get_width(), back_text.get_height())
         pygame.draw.rect(screen, white, back_rect)
-        screen.blit(back_text, (50, 50))
+        screen.blit(back_text, (800, 50))
 
         # Change the cursor to a pointer on back button
         if is_over(mouse_pos, back_rect):
