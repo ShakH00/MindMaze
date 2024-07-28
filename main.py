@@ -10,7 +10,7 @@ pygame.init()
 screen_width = 900
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-empty_background = pygame.image.load("Graphics/empty.png")
+empty_background = pygame.image.load("Graphics/empty.jpg")
 empty_background = pygame.transform.scale(empty_background, (screen_width, screen_height))
 pygame.display.set_caption("MindMaze: The Emotional Odyssey")
 
@@ -252,7 +252,7 @@ def main_game(level):
                 screen.blit(key_img, key_pos)
             #angry level means they win, the NPC is the way to exit
             elif level == "angry":
-                display_message("You Win!")
+                display_message("angry")
                 return
 
         # Check for level completion
@@ -273,7 +273,7 @@ def main_game(level):
                 clock.tick(60)
             #either its happy or neutral levels or its a sad level but they acquired the key
             else:
-                display_message("You Win!")
+                display_message(level)
                 return
 
         # Drawing
