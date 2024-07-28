@@ -26,6 +26,19 @@ tile_options = ['empty', 'wall', 'endgoal', 'npc']
 rows, cols = (10, 10)
 maze = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+]
+
+playerTrack = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 4, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -54,6 +67,9 @@ emoji_neutral = pygame.transform.scale(emoji_neutral, emoji_size)
 font = pygame.font.SysFont(None, 65)
 font_small = pygame.font.SysFont(None, 40)
 font_tiny = pygame.font.SysFont(None, 30)
+
+# Render text
+# feeling_text = font_small.render("How are you feeling today?", True, black)
 
 # Load title image
 title_image = pygame.image.load("Graphics/title_image.png")
@@ -88,30 +104,37 @@ def is_over(pos, rect):
     return rect.collidepoint(pos)
 
 def get_player_position():
-    for row in range(len(maze)):
-        for column in range(len(maze[row])):
-            if maze[row][column] == 4:
-                return [row, column]
+    for row in range(len(playerTrack)):
+        for column in range(len(playerTrack[row])):
+            if playerTrack[row][column] == 4:
+                return [row,column]
 
+def set_player_position(row, col):
+    cur_row = int(get_player_position()[0])
+    cur_col = int(get_player_position()[1])
+    set_empty_space(cur_row,cur_col)
+    playerTrack[row][col] = 4
+
+def set_empty_space(row,col):
+    playerTrack[row][col] = 0
+
+#algorithm used for generating maze levels
 def create_maze(emotion):
     global x_change, y_change, cur_row, cur_col
     running = True
     while running:
         screen.fill(white)
+        global playerX, playerY
         for row in range(len(maze)):
             for column in range(len(maze[row])):
                 x = (column * TILE_SIZE) + 125
                 y = (row * TILE_SIZE) - 20
-                if maze[row][column] == 4:
-                    chosen_tile = pygame.image.load(f"Graphics/empty.png")
-                    chosen_tile = pygame.transform.scale(chosen_tile, (64, 64))
-                    screen.blit(chosen_tile, (x, y))
-                else:
-                    tile = tile_options[maze[row][column]]
-                    chosen_tile = pygame.image.load(f"Graphics/{tile}.png")
-                    chosen_tile = pygame.transform.scale(chosen_tile, (64, 64))
-                    screen.blit(chosen_tile, (x, y))
-        global playerX, playerY
+
+                tile = tile_options[maze[row][column]]
+                chosen_tile = pygame.image.load(f"Graphics/{tile}.png")
+                chosen_tile = pygame.transform.scale(chosen_tile, (64, 64))
+                screen.blit(chosen_tile, (x, y))
+
         cur_row = int(get_player_position()[0])
         cur_col = int(get_player_position()[1])
 
@@ -119,22 +142,24 @@ def create_maze(emotion):
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    if cur_col + 1 <= 10:
-                        playerX += 64
-                        cur_col = cur_col + 1
-                elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    if cur_col - 1 >= 0:
+
+
+                if(event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+                    if(maze[cur_row][cur_col+1] == 0):
+                        x_change = 64
+                        cur_col = cur_col+1
+                elif(event.key == pygame.K_LEFT or event.key == pygame.K_a):
+                    if (maze[cur_row][cur_col-1] == 0):
                         x_change = -64
                         cur_col = cur_col - 1
-                elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                    if cur_row - 1 >= 0:
+                elif(event.key == pygame.K_UP or event.key == pygame.K_w):
+                    if (maze[cur_row-1][cur_col] == 0):
                         y_change = -64
                         cur_row = cur_row - 1
-                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                    if cur_row + 1 <= 10:
+                elif(event.key == pygame.K_DOWN or event.key == pygame.K_s):
+                    if (maze[cur_row+1][cur_col] == 0):
                         y_change = 64
-                        cur_row = cur_row + 1
+                        cur_row = cur_row+ 1
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_d or event.key == pygame.K_a:
                     x_change = 0
@@ -142,19 +167,33 @@ def create_maze(emotion):
                     y_change = 0
         playerX += x_change
         playerY += y_change
-        if maze[cur_row][cur_col] == 4:
-            screen.blit(player, (playerX, playerY))
-        else:
-            tileChosen = tile_options[maze[cur_row][cur_col]]
-            if tileChosen == 'empty':
+        tileChosen = tile_options[maze[cur_row][cur_col]]
+        if tileChosen == 'empty':
+                print("MOVE")
                 screen.blit(player, (playerX, playerY))
-            elif tileChosen == 'endgoal':
+                set_player_position(cur_row,cur_col)
+        elif tileChosen == 'endgoal':
                 print("COMPLETED!")
-            elif tileChosen == 'wall':
-                print("WALL!")
+
 
         pygame.display.flip()
 
+
+        #screen.blit(player,(playerX,playerY))
+
+
+
+
+    #if emotion == "happy":
+
+    #elif emotion == "sad":
+
+    #elif emotion == "angry":
+
+    #elif emotion == "neutral":
+
+
+#function to display the maze on the screen
 def display_maze(maze_txt):
     running = True
 
@@ -172,13 +211,17 @@ def main_screen():
                 running = False
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, happy_rect):
+                    #display_message("Happy")
                     create_maze("happy")
                 elif is_over(mouse_pos, sad_rect):
                     display_message("Sad")
+                    #create_maze("sad")
                 elif is_over(mouse_pos, angry_rect):
                     display_message("Angry")
+                    #create_maze("angry")
                 elif is_over(mouse_pos, neutral_rect):
                     display_message("Neutral")
+                    #create_maze("neutral")
 
         # Fill the screen with the background image
         background_image = pygame.image.load("Graphics/bg1.png")
