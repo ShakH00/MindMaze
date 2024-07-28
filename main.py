@@ -83,7 +83,7 @@ player_speed = 5
 # Define walls (list of rects)
 walls = []
 
-#npc and key used for the sad level and the angry level
+# npc and key used for the sad level and the angry level
 npc_pos = [screen_width // 2, screen_height // 2]
 npc_size = 40
 key_pos = [screen_width // 2, (screen_height // 2)-20]
@@ -98,16 +98,17 @@ key_img = pygame.transform.scale(key_img, (key_size, key_size))
 # Goal position
 goal_rect = pygame.Rect(screen_width - 60, screen_height - 60, 30, 30)
 
+
 def is_over(pos, rect):
     """Check if the mouse is over a given rectangle"""
     return rect.collidepoint(pos)
 
-#function for generating maze walls
+
+# function for generating maze walls
 def randomize_walls(level):
     """Randomize walls based on difficulty level"""
     walls.clear()
     cell_size = 80 if level == "happy" else 60 if level == "neutral" else 40 if level == "sad" else 30 # Larger cell size for easier maze
-    #if level == "sad":
 
     cols, rows = screen_width // cell_size, screen_height // cell_size
 
@@ -115,7 +116,7 @@ def randomize_walls(level):
     grid = [[False for _ in range(cols)] for _ in range(rows)]
     cell_walls = [[[True, True, True, True] for _ in range(cols)] for _ in range(rows)]  # Top, Right, Bottom, Left walls
 
-    #draw the maze walls
+    # draw the maze walls
     def draw_maze():
         for y in range(rows):
             for x in range(cols):
@@ -176,6 +177,7 @@ def randomize_walls(level):
     # Draw the maze
     draw_maze()
 
+
 def main_game(level):
     global back_rect, key_acquired, key_pos
     running = True
@@ -221,7 +223,7 @@ def main_game(level):
         player_rect = pygame.Rect(new_pos[0], new_pos[1], player_size, player_size)
         collision = False
 
-        #player collision with wall to stop player from going on
+        # player collision with wall to stop player from going on
         for wall in walls:
             if player_rect.colliderect(wall):
                 collision = True
@@ -244,35 +246,35 @@ def main_game(level):
             if not any(player_rect.colliderect(wall) for wall in walls):
                 player_pos[1] = new_pos[1]
 
-        #player collide with NPC (map is either angry or sad)
+        # player collide with NPC (map is either angry or sad)
         if player_rect.colliderect(npc_rect):
-            #sad level means they acquire a key and should now head to the exit
+            # sad level means they acquire a key and should now head to the exit
             if level == "sad":
                 key_acquired = True
                 key_pos = [-150, -150]
                 screen.blit(key_img, key_pos)
-            #angry level means they win, the NPC is the way to exit
+            # angry level means they win, the NPC is the way to exit
             elif level == "angry":
                 display_message("Anger is like a storm. Take deep breaths or talk with a trusted adult to help let out some anger!")
                 return
 
         # Check for level completion
         if player_rect.colliderect(goal_rect):
-            #sad level but they didn't get the key so they do not complete the level
+            # sad level but they didn't get the key so they do not complete the level
             if level == "sad" and not key_acquired:
                 fail_text = font_small.render("You need a key to pass!", True, black)
                 fail_rect = pygame.Rect(300, 50, fail_text.get_width(), fail_text.get_height())
                 screen.blit(fail_text, (300, 50))
                 pygame.display.flip()
                 clock.tick(60)
-            #angry level, meaning the exit sign isn't where they should go
+            # angry level, meaning the exit sign isn't where they should go
             elif level == "angry":
                 fail_text = font_small.render("Wrong final destination.", True, black)
                 fail_rect = pygame.Rect(300, 50, fail_text.get_width(), fail_text.get_height())
                 screen.blit(fail_text, (300, 50))
                 pygame.display.flip()
                 clock.tick(60)
-            #either its happy or neutral levels or its a sad level but they acquired the key
+            # either its happy or neutral levels or its a sad level but they acquired the key
             else:
                 if level == "happy":
                     display_message("Happiness is like sunshine, it brightens your day and everyone around you.")
@@ -298,7 +300,6 @@ def main_game(level):
         if level == "angry":
             screen.blit(npc_img, npc_pos)
 
-
         # Draw back button
         back_rect = pygame.Rect(800, 40, 100, 50)
         screen.blit(back_button_img, back_rect)
@@ -306,6 +307,7 @@ def main_game(level):
         # Update the display
         pygame.display.flip()
         clock.tick(60)
+
 
 def main_screen():
     """Display the main screen with emojis"""
@@ -392,6 +394,7 @@ def main_screen():
         # Update the display
         pygame.display.flip()
 
+
 # Define the display_message function
 def display_message(message):
     """Display the message screen with a back button"""
@@ -435,6 +438,7 @@ def display_message(message):
 
         # Update the display
         pygame.display.flip()
+
 
 # Run the main screen function
 main_screen()
