@@ -78,11 +78,16 @@ player_speed = 5
 # Define walls (list of rects)
 walls = []
 
+#npc and key used for the sad level and the angry level
 npc_pos = [screen_width // 2, screen_height // 2]
 npc_size = 40
+key_pos = [screen_width // 2, (screen_height // 2)-20]
+key_size = 60
 key_acquired = False
 npc_rect = pygame.Rect(npc_pos[0], npc_pos[1], npc_size, npc_size)
 npc_img = pygame.transform.scale(npc_img, (npc_size, npc_size))
+key_rect = pygame.Rect(key_pos[0], key_pos[1], key_size, key_size)
+key_img = pygame.transform.scale(key_img, (key_size, key_size))
 
 
 # Goal position
@@ -92,6 +97,7 @@ def is_over(pos, rect):
     """Check if the mouse is over a given rectangle"""
     return rect.collidepoint(pos)
 
+#function for generating maze walls
 def randomize_walls(level):
     """Randomize walls based on difficulty level"""
     walls.clear()
@@ -104,6 +110,7 @@ def randomize_walls(level):
     grid = [[False for _ in range(cols)] for _ in range(rows)]
     cell_walls = [[[True, True, True, True] for _ in range(cols)] for _ in range(rows)]  # Top, Right, Bottom, Left walls
 
+    #draw the maze walls
     def draw_maze():
         for y in range(rows):
             for x in range(cols):
@@ -165,7 +172,7 @@ def randomize_walls(level):
     draw_maze()
 
 def main_game(level):
-    global back_rect, key_acquired
+    global back_rect, key_acquired, key_pos
     running = True
     clock = pygame.time.Clock()
     player_pos[:] = [10, 10]  # Reset player position
@@ -209,7 +216,7 @@ def main_game(level):
         player_rect = pygame.Rect(new_pos[0], new_pos[1], player_size, player_size)
         collision = False
 
-
+        #player collision with wall to stop player from going on
         for wall in walls:
             if player_rect.colliderect(wall):
                 collision = True
@@ -232,14 +239,35 @@ def main_game(level):
             if not any(player_rect.colliderect(wall) for wall in walls):
                 player_pos[1] = new_pos[1]
 
-        if level == "sad":
-            if player_rect.colliderect(npc_rect):
+        #player collide with NPC (map is either angry or sad)
+        if player_rect.colliderect(npc_rect):
+            #sad level means they acquire a key and should now head to the exit
+            if level == "sad":
                 key_acquired = True
+                key_pos = [-150, -150]
+                screen.blit(key_img, key_pos)
+            #angry level means they win, the NPC is the way to exit
+            elif level == "angry":
+                display_message("You Win!")
+                return
 
-            # Check for level completion
+        # Check for level completion
         if player_rect.colliderect(goal_rect):
+            #sad level but they didn't get the key so they do not complete the level
             if level == "sad" and not key_acquired:
-                display_message("You need a key to pass!")
+                fail_text = font_small.render("You need a key to pass!", True, black)
+                fail_rect = pygame.Rect(300, 50, fail_text.get_width(), fail_text.get_height())
+                screen.blit(fail_text, (300, 50))
+                pygame.display.flip()
+                clock.tick(60)
+            #angry level, meaning the exit sign isn't where they should go
+            elif level == "angry":
+                fail_text = font_small.render("Wrong final destination.", True, black)
+                fail_rect = pygame.Rect(300, 50, fail_text.get_width(), fail_text.get_height())
+                screen.blit(fail_text, (300, 50))
+                pygame.display.flip()
+                clock.tick(60)
+            #either its happy or neutral levels or its a sad level but they acquired the key
             else:
                 display_message("You Win!")
                 return
@@ -253,6 +281,11 @@ def main_game(level):
 
         if level == "sad":
             screen.blit(npc_img, npc_pos)
+            screen.blit(key_img, key_pos)
+
+        if level == "angry":
+            screen.blit(npc_img, npc_pos)
+
 
         # Draw back button
         back_text = font_small.render("Back", True, black)
