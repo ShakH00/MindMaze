@@ -153,7 +153,6 @@ def randomize_walls(level):
     # Draw the maze
     draw_maze()
 
-
 def main_game(level):
     global back_rect
     running = True
@@ -172,7 +171,6 @@ def main_game(level):
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(pygame.mouse.get_pos(), back_rect):
                     main_screen()
-                    return
 
         # Movement
         keys = pygame.key.get_pressed()
@@ -184,9 +182,9 @@ def main_game(level):
         if keys[K_d] or keys[K_RIGHT]:
             x_change = player_speed
         if keys[K_w] or keys[K_UP]:
-            y_change = -player_speed
+            y_change = -player_speed + 2
         if keys[K_s] or keys[K_DOWN]:
-            y_change = player_speed
+            y_change = player_speed - 2
 
         # Update player position and handle collisions
         new_pos = player_pos.copy()
@@ -341,7 +339,7 @@ def display_message(message):
                 sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, back_rect):
-                    running = False
+                    main_screen()
 
         # Background
         screen.fill(white)
