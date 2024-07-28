@@ -2,7 +2,6 @@ import pygame
 import sys
 import random
 from pygame.locals import *
-from pyvidplayer2 import Video
 
 # Initialize Pygame
 pygame.init()
