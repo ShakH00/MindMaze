@@ -32,6 +32,10 @@ font = pygame.font.SysFont(None, 65)
 font_small = pygame.font.SysFont(None, 40)
 font_tiny = pygame.font.SysFont(None, 30)
 
+# Load the back button image
+back_button_img = pygame.image.load("Graphics/back_button.png")
+back_button_img = pygame.transform.scale(back_button_img, (50, 40))
+
 # Load title image
 title_image = pygame.image.load("Graphics/title_image.png")
 title_image_rect = title_image.get_rect(center=(screen_width // 2, 110))
@@ -255,9 +259,8 @@ def main_game(level):
             screen.blit(npc_img, npc_pos)
 
         # Draw back button
-        back_text = font_small.render("Back", True, black)
-        back_rect = pygame.Rect(800, 50, back_text.get_width(), back_text.get_height())
-        screen.blit(back_text, (800, 50))
+        back_rect = pygame.Rect(800, 40, 100, 50)
+        screen.blit(back_button_img, back_rect)
 
         # Update the display
         pygame.display.flip()
@@ -372,10 +375,8 @@ def display_message(message):
         screen.fill(white)
 
         # Draw back button
-        back_text = font_small.render("Back", True, black)
-        back_rect = pygame.Rect(800, 50, back_text.get_width(), back_text.get_height())
-        pygame.draw.rect(screen, white, back_rect)
-        screen.blit(back_text, (800, 50))
+        back_rect = pygame.Rect(800, 50, 100, 50)
+        screen.blit(back_button_img, back_rect)
 
         # Change the cursor to a pointer on back button
         if is_over(mouse_pos, back_rect):
