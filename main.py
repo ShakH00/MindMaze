@@ -10,6 +10,8 @@ pygame.init()
 screen_width = 900
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
+empty_background = pygame.image.load("Graphics/empty.png")
+empty_background = pygame.transform.scale(empty_background, (screen_width, screen_height))
 pygame.display.set_caption("MindMaze: The Emotional Odyssey")
 
 # Emojis
@@ -67,7 +69,7 @@ blue = (0, 0, 255)
 player_img = pygame.image.load("Graphics/player.png")
 
 # Player settings
-player_size = 40
+player_size = 20
 player_pos = [50, 50]
 player_speed = 5
 
@@ -75,7 +77,7 @@ player_speed = 5
 walls = []
 
 # Goal position
-goal_rect = pygame.Rect(screen_width-60, screen_height-60, 50, 50)
+goal_rect = pygame.Rect(screen_width - 60, screen_height - 60, 30, 30)
 
 def is_over(pos, rect):
     """Check if the mouse is over a given rectangle"""
@@ -84,22 +86,73 @@ def is_over(pos, rect):
 def randomize_walls(level):
     """Randomize walls based on difficulty level"""
     walls.clear()
-    # Outer walls
-    walls.extend([
-        pygame.Rect(0, 0, screen_width, 10),
-        pygame.Rect(0, 0, 10, screen_height),
-        pygame.Rect(0, screen_height-10, screen_width, 10),
-        pygame.Rect(screen_width-10, 0, 10, screen_height),
-    ])
+    cell_size = 40  # Size of each cell in the grid
+    cols, rows = screen_width // cell_size, screen_height // cell_size
 
-    # Add inner walls
-    wall_count = { "happy": 5, "sad": 10, "angry": 15, "neutral": 20 }
-    for _ in range(wall_count[level]):
-        x = random.randint(50, screen_width - 100)
-        y = random.randint(50, screen_height - 100)
-        width = random.choice([10, 200])
-        height = random.choice([10, 200])
-        walls.append(pygame.Rect(x, y, width, height))
+    # Initialize grid and walls
+    grid = [[False for _ in range(cols)] for _ in range(rows)]
+    cell_walls = [[[True, True, True, True] for _ in range(cols)] for _ in range(rows)]  # Top, Right, Bottom, Left walls
+
+    def draw_maze():
+        for y in range(rows):
+            for x in range(cols):
+                if cell_walls[y][x][0]:  # Top
+                    walls.append(pygame.Rect(x * cell_size, y * cell_size, cell_size, 3))
+                if cell_walls[y][x][1]:  # Right
+                    walls.append(pygame.Rect((x + 1) * cell_size, y * cell_size, 3, cell_size))
+                if cell_walls[y][x][2]:  # Bottom
+                    walls.append(pygame.Rect(x * cell_size, (y + 1) * cell_size, cell_size, 3))
+                if cell_walls[y][x][3]:  # Left
+                    walls.append(pygame.Rect(x * cell_size, y * cell_size, 3, cell_size))
+
+    def get_neighbors(x, y):
+        neighbors = []
+        if y > 0:
+            neighbors.append((x, y - 1))
+        if x < cols - 1:
+            neighbors.append((x + 1, y))
+        if y < rows - 1:
+            neighbors.append((x, y + 1))
+        if x > 0:
+            neighbors.append((x - 1, y))
+        return neighbors
+
+    def remove_walls(current, next):
+        cx, cy = current
+        nx, ny = next
+        dx = cx - nx
+        if dx == 1:
+            cell_walls[cy][cx][3] = False
+            cell_walls[ny][nx][1] = False
+        elif dx == -1:
+            cell_walls[cy][cx][1] = False
+            cell_walls[ny][nx][3] = False
+        dy = cy - ny
+        if dy == 1:
+            cell_walls[cy][cx][0] = False
+            cell_walls[ny][nx][2] = False
+        elif dy == -1:
+            cell_walls[cy][cx][2] = False
+            cell_walls[ny][nx][0] = False
+
+    # Maze generation using Recursive Backtracking
+    stack = [(0, 0)]
+    grid[0][0] = True
+
+    while stack:
+        current = stack[-1]
+        neighbors = [n for n in get_neighbors(*current) if not grid[n[1]][n[0]]]
+        if neighbors:
+            next_cell = random.choice(neighbors)
+            remove_walls(current, next_cell)
+            grid[next_cell[1]][next_cell[0]] = True
+            stack.append(next_cell)
+        else:
+            stack.pop()
+
+    # Draw the maze
+    draw_maze()
+
 
 def main_game(level):
     global back_rect
@@ -148,7 +201,8 @@ def main_game(level):
             return
 
         # Drawing
-        screen.fill(white)
+
+        screen.blit(empty_background, (0, 0))
         pygame.draw.rect(screen, blue, player_rect)
         for wall in walls:
             pygame.draw.rect(screen, black, wall)
