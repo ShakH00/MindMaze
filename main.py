@@ -52,6 +52,28 @@ def is_over(pos, rect):
 #algorithm used for generating maze levels
 def create_maze(emotion):
     running = True
+    #lines 56-67 are the base code for generating the outer walls of any maze.
+    str_maze = ""
+    for i in range(35):
+        str_maze += "#"
+    str_maze += "\n"
+    for x in range(15):
+        str_maze += "#"
+        for z in range(33):
+            str_maze += " "
+        str_maze += "#"
+        str_maze += "\n"
+    for j in range(35):
+        str_maze += "#"
+    if emotion == "happy":
+
+    elif emotion == "sad":
+
+    elif emotion == "angry":
+
+    elif emotion == "neutral":
+
+    display_maze(str_maze)
 
 #function to display the maze on the screen
 def display_maze(maze_txt):
