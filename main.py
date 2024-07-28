@@ -167,7 +167,7 @@ def main_screen():
                     #create_maze("neutral")
 
         # Fill the screen with the background image
-        background_image = pygame.image.load("Graphics/bg.jpg")
+        background_image = pygame.image.load("Graphics/bg1.png")
         screen.blit(background_image, (0, 0))
 
         # Draw title image
