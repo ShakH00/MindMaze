@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 from pygame.locals import *
+import webbrowser
 
 # Initialize Pygame
 pygame.init()
@@ -35,6 +36,10 @@ font_tiny = pygame.font.SysFont(None, 30)
 # Load the back button image
 back_button_img = pygame.image.load("Graphics/back_button.png")
 back_button_img = pygame.transform.scale(back_button_img, (50, 40))
+
+# Goal position
+goal_image = pygame.image.load("Graphics/endgoal.png")
+goal_rect = pygame.Rect(screen_width - 60, screen_height - 60, 30, 30)
 
 # Load title image
 title_image = pygame.image.load("Graphics/title_image.png")
@@ -92,10 +97,6 @@ npc_rect = pygame.Rect(npc_pos[0], npc_pos[1], npc_size, npc_size)
 npc_img = pygame.transform.scale(npc_img, (npc_size, npc_size))
 key_rect = pygame.Rect(key_pos[0], key_pos[1], key_size, key_size)
 key_img = pygame.transform.scale(key_img, (key_size, key_size))
-
-
-# Goal position
-goal_rect = pygame.Rect(screen_width - 60, screen_height - 60, 30, 30)
 
 
 def is_over(pos, rect):
@@ -189,6 +190,9 @@ def main_game(level):
     key_acquired = False  # Track if key is acquired
 
     while running:
+        mouse_pos = pygame.mouse.get_pos()
+        cursor_changed = False
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -254,7 +258,10 @@ def main_game(level):
                 screen.blit(key_img, key_pos)
             # angry level means they win, the NPC is the way to exit
             elif level == "angry":
-                display_message("Anger is like a storm. Take deep breaths or talk with a trusted adult to help let out some anger!")
+                angry_msg = "Anger is like a storm, it's powerful but can be managed.\nTake deep breaths or talk with a trusted adult to help let out some anger!"
+                link_text = "Here is a short video for you"
+                angry_link = "https://shorturl.at/QGBwl"
+                display_message(angry_msg, link_text, angry_link)
                 return
 
         # Check for level completion
@@ -266,6 +273,7 @@ def main_game(level):
                 screen.blit(fail_text, (300, 50))
                 pygame.display.flip()
                 clock.tick(60)
+
             # angry level, meaning the exit sign isn't where they should go
             elif level == "angry":
                 fail_text = font_small.render("Wrong final destination.", True, black)
@@ -273,16 +281,29 @@ def main_game(level):
                 screen.blit(fail_text, (300, 50))
                 pygame.display.flip()
                 clock.tick(60)
+
             # either its happy or neutral levels or its a sad level but they acquired the key
             else:
+                link_text = "Here is a short video for you"
                 if level == "happy":
-                    display_message("Happiness is like sunshine, it brightens your day and everyone around you.")
+                    happy_msg = "Happiness is like sunshine, it brightens your day and everyone around you.\nKeep doing the things that make you happy"
+                    happy_link = "https://shorturl.at/10stS"
+                    display_message(happy_msg, link_text, happy_link)
+
                 if level == "sad":
-                    display_message("If you're ever unhappy don't be afraid to reach out to a trusted adult!")
+                    sad_msg = "If you're ever unhappy, remember that you can find your sunshine again!\nDon't be afraid to reach out to a trusted adult!"
+                    sad_link = "https://shorturl.at/mIjnO"
+                    display_message(sad_msg, link_text, sad_link)
+
                 if level == "angry":
-                    display_message("Anger is like a storm. Talk with a trusted adult to help let out some anger!")
+                    angry_msg = "Anger is like a storm, it's powerful but can be managed.\nTake deep breaths or talk with a trusted adult to help let out some anger!"
+                    angry_link = "https://shorturl.at/QGBwl"
+                    display_message(angry_msg, link_text, angry_link)
+
                 if level == "neutral":
-                    display_message("Sometimes our feelings are like calm waters, just smooth. That's perfectly okay.")
+                    neutral_msg = "Sometimes our feelings are like calm waters, just steady and smooth.\nThat's perfectly okay."
+                    neutral_link = "https://shorturl.at/IUkb9"
+                    display_message(neutral_msg, link_text, neutral_link)
                 return
 
         # Drawing
@@ -290,7 +311,7 @@ def main_game(level):
         pygame.draw.rect(screen, blue, player_rect)
         for wall in walls:
             pygame.draw.rect(screen, black, wall)
-        pygame.draw.rect(screen, (0, 255, 0), goal_rect)
+        pygame.draw.rect(screen, (0, 100, 0), goal_rect)
 
         if level == "sad":
             screen.blit(npc_img, npc_pos)
@@ -302,6 +323,14 @@ def main_game(level):
         # Draw back button
         back_rect = pygame.Rect(800, 40, 100, 50)
         screen.blit(back_button_img, back_rect)
+
+        # Hover on back button
+        if is_over(mouse_pos, back_rect):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            cursor_changed = True
+
+        if not cursor_changed:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
         # Update the display
         pygame.display.flip()
@@ -395,9 +424,9 @@ def main_screen():
 
 
 # Define the display_message function
-def display_message(message):
+def display_message(message, link_text, link_url):
     """Display the message screen with a back button"""
-    global back_rect
+    global back_rect, link_rect
     running = True
     while running:
         mouse_pos = pygame.mouse.get_pos()
@@ -418,17 +447,23 @@ def display_message(message):
         screen.fill(white)
 
         # Display the message in the center of the screen
-        font_large = pygame.font.SysFont(None, 30)
-        text_surface = font_large.render(message, True, black)
-        text_rect = text_surface.get_rect(center=(screen_width // 2, screen_height // 2))
-        screen.blit(text_surface, text_rect)
+        lines = message.split('\n')  # Split the message into lines
+        for i, line in enumerate(lines):
+            text_surface = font_tiny.render(line, True, black)
+            text_rect = text_surface.get_rect(center=(screen_width // 2, screen_height // 2 - len(lines) * 15 + i * 30))
+            screen.blit(text_surface, text_rect)
+
+        # Display the clickable link
+        link_surface = font_tiny.render(link_text, True, (0, 0, 255))
+        link_rect = link_surface.get_rect(center=(screen_width // 2, screen_height // 2 + len(lines) * 30))
+        screen.blit(link_surface, link_rect)
 
         # Draw back button
         back_rect = pygame.Rect(800, 50, 100, 50)
         screen.blit(back_button_img, back_rect)
 
         # Change the cursor to a pointer on back button
-        if is_over(mouse_pos, back_rect):
+        if is_over(mouse_pos, link_rect) or is_over(mouse_pos, back_rect):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
             cursor_changed = True
 
