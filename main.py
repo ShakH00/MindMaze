@@ -122,6 +122,7 @@ def set_empty_space(row,col):
 def create_maze(emotion):
     global x_change, y_change, cur_row, cur_col
     running = True
+    clock = pygame.time.Clock()
     while running:
         screen.fill(white)
         global playerX, playerY
@@ -145,38 +146,43 @@ def create_maze(emotion):
 
 
                 if(event.key == pygame.K_RIGHT or event.key == pygame.K_d):
-                    if(maze[cur_row][cur_col+1] == 0):
-                        x_change = 64
-                        cur_col = cur_col+1
+
+                    new_col = cur_col + 1
+                    if new_col < len(maze[0]) and maze[cur_row][new_col] == 0:
+                        x_change = TILE_SIZE
+                        y_change = 0
+                        set_player_position(cur_row,new_col)
                 elif(event.key == pygame.K_LEFT or event.key == pygame.K_a):
-                    if (maze[cur_row][cur_col-1] == 0):
-                        x_change = -64
-                        cur_col = cur_col - 1
+                    new_col = cur_col - 1
+                    if new_col >= 0 and maze[cur_row][new_col] == 0:
+                        x_change = -TILE_SIZE
+                        y_change = 0
+                        set_player_position(cur_row, new_col)
                 elif(event.key == pygame.K_UP or event.key == pygame.K_w):
-                    if (maze[cur_row-1][cur_col] == 0):
-                        y_change = -64
-                        cur_row = cur_row - 1
+                    new_row = cur_row - 1
+                    if new_row >= 0 and maze[new_row][cur_col] == 0:
+                        y_change = -TILE_SIZE
+                        x_change = 0
+                        set_player_position(new_row, cur_col)
                 elif(event.key == pygame.K_DOWN or event.key == pygame.K_s):
-                    if (maze[cur_row+1][cur_col] == 0):
-                        y_change = 64
-                        cur_row = cur_row+ 1
+                    new_row = cur_row + 1
+                    if new_row < len(maze) and maze[new_row][cur_col] == 0:
+                        y_change = TILE_SIZE
+                        x_change = 0
+                        set_player_position(new_row, cur_col)
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_d or event.key == pygame.K_a:
+                if event.key in [pygame.K_RIGHT, pygame.K_LEFT, pygame.K_d, pygame.K_a, pygame.K_UP, pygame.K_DOWN, pygame.K_w, pygame.K_s]:
                     x_change = 0
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_w or event.key == pygame.K_s:
                     y_change = 0
-        playerX += x_change
-        playerY += y_change
-        tileChosen = tile_options[maze[cur_row][cur_col]]
-        if tileChosen == 'empty':
-                print("MOVE")
-                screen.blit(player, (playerX, playerY))
-                set_player_position(cur_row,cur_col)
-        elif tileChosen == 'endgoal':
-                print("COMPLETED!")
+        if x_change != 0 or y_change != 0:
+            playerX += x_change
+            playerY += y_change
+            x_change = 0
+            y_change = 0
 
-
+        screen.blit(player, (playerX, playerY))
         pygame.display.flip()
+        clock.tick(60)
 
 
         #screen.blit(player,(playerX,playerY))
