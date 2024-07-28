@@ -26,7 +26,7 @@ tile_options = ['empty','wall','endgoal','npc']
 rows, cols = (10, 10)
 maze = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 4, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -80,9 +80,15 @@ def is_over(pos, rect):
     """Check if the mouse is over a given rectangle"""
     return rect.collidepoint(pos)
 
+def get_player_position():
+    for row in range(len(maze)):
+        for column in range(len(maze[row])):
+            if maze[row][column] == 4:
+                return [row,column]
+
 #algorithm used for generating maze levels
 def create_maze(emotion):
-    global x_change, y_change
+    global x_change, y_change, cur_row, cur_col
     running = True
     while running:
         screen.fill(white)
@@ -90,33 +96,49 @@ def create_maze(emotion):
             for column in range(len(maze[row])):
                 x = (column * TILE_SIZE) + 125
                 y = (row * TILE_SIZE) - 20
-
-                tile = tile_options[maze[row][column]]
-                chosen_tile = pygame.image.load(f"Graphics/{tile}.png")
-                chosen_tile = pygame.transform.scale(chosen_tile, (64, 64))
-                screen.blit(chosen_tile, (x, y))
+                if maze[row][column] == 4:
+                    chosen_tile = pygame.image.load(f"Graphics/empty.png")
+                    chosen_tile = pygame.transform.scale(chosen_tile, (64, 64))
+                    screen.blit(chosen_tile, (x, y))
+                else:
+                    tile = tile_options[maze[row][column]]
+                    chosen_tile = pygame.image.load(f"Graphics/{tile}.png")
+                    chosen_tile = pygame.transform.scale(chosen_tile, (64, 64))
+                    screen.blit(chosen_tile, (x, y))
+        global playerX, playerY
+        cur_row = int(get_player_position()[0])
+        cur_col = int(get_player_position()[1])
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                global playerX, playerY
-                if(event.key == pygame.K_RIGHT):
+
+
+                if(event.key == pygame.K_RIGHT or event.key == pygame.K_d):
                     playerX += 64
-                elif(event.key == pygame.K_LEFT):
+                    cur_col += 1
+                elif(event.key == pygame.K_LEFT or event.key == pygame.K_a):
                     x_change = -64
-                elif(event.key == pygame.K_UP):
+                    cur_col -= 1
+                elif(event.key == pygame.K_UP or event.key == pygame.K_w):
                     y_change = -64
-                elif(event.key == pygame.K_DOWN):
+                    row -= 1
+                elif(event.key == pygame.K_DOWN or event.key == pygame.K_s):
                     y_change = 64
+                    row += 1
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_d or event.key == pygame.K_a:
                     x_change = 0
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_w or event.key == pygame.K_s:
                     y_change = 0
         playerX += x_change
         playerY += y_change
-        screen.blit(player, (playerX, playerY))
+        tileChosen = tile_options[maze[cur_row,cur_col]]
+        if tileChosen == 'empty':
+            screen.blit(player, (playerX, playerY))
+        elif tileChosen == 'endgoal':
+            print("COMPLETED!")
 
 
         pygame.display.flip()
@@ -167,7 +189,7 @@ def main_screen():
                     #create_maze("neutral")
 
         # Fill the screen with the background image
-        background_image = pygame.image.load("Graphics/bg1.png")
+        background_image = pygame.image.load("Graphics/bg.jpg")
         screen.blit(background_image, (0, 0))
 
         # Draw title image
