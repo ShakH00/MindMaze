@@ -261,7 +261,7 @@ def main_game(level):
                 angry_msg = "Anger is like a storm, it's powerful but can be managed.\nTake deep breaths or talk with a trusted adult to help let out some anger!"
                 link_text = "Here is a short video for you"
                 angry_link = "https://shorturl.at/QGBwl"
-                display_message(angry_msg, link_text, angry_link)
+                display_message(angry_msg, link_text, angry_link, "angry")
                 return
 
         # Check for level completion
@@ -288,22 +288,22 @@ def main_game(level):
                 if level == "happy":
                     happy_msg = "Happiness is like sunshine, it brightens your day and everyone around you.\nKeep doing the things that make you happy"
                     happy_link = "https://shorturl.at/10stS"
-                    display_message(happy_msg, link_text, happy_link)
+                    display_message(happy_msg, link_text, happy_link, "happy")
 
                 if level == "sad":
                     sad_msg = "If you're ever unhappy, remember that you can find your sunshine again!\nDon't be afraid to reach out to a trusted adult!"
                     sad_link = "https://shorturl.at/mIjnO"
-                    display_message(sad_msg, link_text, sad_link)
+                    display_message(sad_msg, link_text, sad_link, "sad")
 
                 if level == "angry":
                     angry_msg = "Anger is like a storm, it's powerful but can be managed.\nTake deep breaths or talk with a trusted adult to help let out some anger!"
                     angry_link = "https://shorturl.at/QGBwl"
-                    display_message(angry_msg, link_text, angry_link)
+                    display_message(angry_msg, link_text, angry_link, "angry")
 
                 if level == "neutral":
                     neutral_msg = "Sometimes our feelings are like calm waters, just steady and smooth.\nThat's perfectly okay."
                     neutral_link = "https://shorturl.at/IUkb9"
-                    display_message(neutral_msg, link_text, neutral_link)
+                    display_message(neutral_msg, link_text, neutral_link, "neutral")
                 return
 
         # Drawing
@@ -424,7 +424,7 @@ def main_screen():
 
 
 # Define the display_message function
-def display_message(message, link_text, link_url):
+def display_message(message, link_text, link_url, level):
     """Display the message screen with a back button"""
     global back_rect, link_rect
     running = True
@@ -442,6 +442,15 @@ def display_message(message, link_text, link_url):
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, back_rect):
                     main_screen()
+                if is_over(mouse_pos, link_rect):
+                    if level == "happy":
+                        webbrowser.open("https://shorturl.at/10stS")
+                    if level == "sad":
+                        webbrowser.open("https://shorturl.at/mIjnO")
+                    if level == "angry":
+                        webbrowser.open("https://shorturl.at/QGBwl")
+                    if level == "neutral":
+                        webbrowser.open("https://shorturl.at/IUkb9")
 
         # Background
         screen.fill(white)
