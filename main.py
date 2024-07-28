@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 from pygame.locals import *
 
 # Initialize Pygame
@@ -10,45 +11,6 @@ screen_width = 900
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("MindMaze: The Emotional Odyssey")
-
-white = (255, 255, 255)
-black = (0, 0, 0)
-TILE_SIZE = 64
-WIDTH = TILE_SIZE * 10
-HEIGHT = TILE_SIZE * 10
-player = pygame.image.load("Graphics/player.png")
-player = pygame.transform.scale(player, (64, 64))
-playerX = (1 * TILE_SIZE) + 125
-playerY = (1 * TILE_SIZE) - 20
-x_change = 0
-y_change = 0
-tile_options = ['empty', 'wall', 'endgoal', 'npc']
-rows, cols = (10, 10)
-maze = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-]
-
-playerTrack = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 4, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-]
 
 # Emojis
 emoji_happy = pygame.image.load("Graphics/emoji_happy.png")
@@ -67,9 +29,6 @@ emoji_neutral = pygame.transform.scale(emoji_neutral, emoji_size)
 font = pygame.font.SysFont(None, 65)
 font_small = pygame.font.SysFont(None, 40)
 font_tiny = pygame.font.SysFont(None, 30)
-
-# Render text
-# feeling_text = font_small.render("How are you feeling today?", True, black)
 
 # Load title image
 title_image = pygame.image.load("Graphics/title_image.png")
@@ -99,109 +58,111 @@ current_sizes = {
     "neutral": list(emoji_size)
 }
 
+# Colors
+white = (255, 255, 255)
+black = (0, 0, 0)
+blue = (0, 0, 255)
+
+# Load images
+player_img = pygame.image.load("Graphics/player.png")
+
+# Player settings
+player_size = 40
+player_pos = [50, 50]
+player_speed = 5
+
+# Define walls (list of rects)
+walls = []
+
+# Goal position
+goal_rect = pygame.Rect(screen_width-60, screen_height-60, 50, 50)
+
 def is_over(pos, rect):
     """Check if the mouse is over a given rectangle"""
     return rect.collidepoint(pos)
 
-def get_player_position():
-    for row in range(len(playerTrack)):
-        for column in range(len(playerTrack[row])):
-            if playerTrack[row][column] == 4:
-                return [row,column]
+def randomize_walls(level):
+    """Randomize walls based on difficulty level"""
+    walls.clear()
+    # Outer walls
+    walls.extend([
+        pygame.Rect(0, 0, screen_width, 10),
+        pygame.Rect(0, 0, 10, screen_height),
+        pygame.Rect(0, screen_height-10, screen_width, 10),
+        pygame.Rect(screen_width-10, 0, 10, screen_height),
+    ])
 
-def set_player_position(row, col):
-    cur_row = int(get_player_position()[0])
-    cur_col = int(get_player_position()[1])
-    set_empty_space(cur_row,cur_col)
-    playerTrack[row][col] = 4
+    # Add inner walls
+    wall_count = { "happy": 5, "sad": 10, "angry": 15, "neutral": 20 }
+    for _ in range(wall_count[level]):
+        x = random.randint(50, screen_width - 100)
+        y = random.randint(50, screen_height - 100)
+        width = random.choice([10, 200])
+        height = random.choice([10, 200])
+        walls.append(pygame.Rect(x, y, width, height))
 
-def set_empty_space(row,col):
-    playerTrack[row][col] = 0
-
-#algorithm used for generating maze levels
-def create_maze(emotion):
-    global x_change, y_change, cur_row, cur_col
+def main_game(level):
+    global back_rect
     running = True
     clock = pygame.time.Clock()
+    player_pos[:] = [50, 50]  # Reset player position
+    randomize_walls(level)  # Randomize walls for the level
+
     while running:
-        screen.fill(white)
-        global playerX, playerY
-        for row in range(len(maze)):
-            for column in range(len(maze[row])):
-                x = (column * TILE_SIZE) + 125
-                y = (row * TILE_SIZE) - 20
-
-                tile = tile_options[maze[row][column]]
-                chosen_tile = pygame.image.load(f"Graphics/{tile}.png")
-                chosen_tile = pygame.transform.scale(chosen_tile, (64, 64))
-                screen.blit(chosen_tile, (x, y))
-
-        cur_row = int(get_player_position()[0])
-        cur_col = int(get_player_position()[1])
-
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == MOUSEBUTTONDOWN:
+                if is_over(pygame.mouse.get_pos(), back_rect):
+                    main_screen()
+                    return
 
+        # Movement
+        keys = pygame.key.get_pressed()
+        if keys[K_a] or keys[K_LEFT]:
+            player_pos[0] -= player_speed
+        if keys[K_d] or keys[K_RIGHT]:
+            player_pos[0] += player_speed
+        if keys[K_w] or keys[K_UP]:
+            player_pos[1] -= player_speed
+        if keys[K_s] or keys[K_DOWN]:
+            player_pos[1] += player_speed
 
-                if(event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+        # Collision detection with walls
+        player_rect = pygame.Rect(player_pos[0], player_pos[1], player_size, player_size)
+        for wall in walls:
+            if player_rect.colliderect(wall):
+                if keys[K_a] or keys[K_LEFT]:
+                    player_pos[0] += player_speed
+                if keys[K_d] or keys[K_RIGHT]:
+                    player_pos[0] -= player_speed
+                if keys[K_w] or keys[K_UP]:
+                    player_pos[1] += player_speed
+                if keys[K_s] or keys[K_DOWN]:
+                    player_pos[1] -= player_speed
 
-                    new_col = cur_col + 1
-                    if new_col < len(maze[0]) and maze[cur_row][new_col] == 0:
-                        x_change = TILE_SIZE
-                        y_change = 0
-                        set_player_position(cur_row,new_col)
-                elif(event.key == pygame.K_LEFT or event.key == pygame.K_a):
-                    new_col = cur_col - 1
-                    if new_col >= 0 and maze[cur_row][new_col] == 0:
-                        x_change = -TILE_SIZE
-                        y_change = 0
-                        set_player_position(cur_row, new_col)
-                elif(event.key == pygame.K_UP or event.key == pygame.K_w):
-                    new_row = cur_row - 1
-                    if new_row >= 0 and maze[new_row][cur_col] == 0:
-                        y_change = -TILE_SIZE
-                        x_change = 0
-                        set_player_position(new_row, cur_col)
-                elif(event.key == pygame.K_DOWN or event.key == pygame.K_s):
-                    new_row = cur_row + 1
-                    if new_row < len(maze) and maze[new_row][cur_col] == 0:
-                        y_change = TILE_SIZE
-                        x_change = 0
-                        set_player_position(new_row, cur_col)
-            if event.type == pygame.KEYUP:
-                if event.key in [pygame.K_RIGHT, pygame.K_LEFT, pygame.K_d, pygame.K_a, pygame.K_UP, pygame.K_DOWN, pygame.K_w, pygame.K_s]:
-                    x_change = 0
-                    y_change = 0
-        if x_change != 0 or y_change != 0:
-            playerX += x_change
-            playerY += y_change
-            x_change = 0
-            y_change = 0
+        # Check for level completion
+        if player_rect.colliderect(goal_rect):
+            display_message("You Win!")
+            return
 
-        screen.blit(player, (playerX, playerY))
+        # Drawing
+        screen.fill(white)
+        pygame.draw.rect(screen, blue, player_rect)
+        for wall in walls:
+            pygame.draw.rect(screen, black, wall)
+        pygame.draw.rect(screen, (0, 255, 0), goal_rect)
+
+        # Draw back button
+        back_text = font_small.render("Back", True, black)
+        back_rect = pygame.Rect(50, 50, back_text.get_width(), back_text.get_height())
+        pygame.draw.rect(screen, white, back_rect)
+        screen.blit(back_text, (50, 50))
+
+        # Update the display
         pygame.display.flip()
         clock.tick(60)
-
-
-        #screen.blit(player,(playerX,playerY))
-
-
-
-
-    #if emotion == "happy":
-
-    #elif emotion == "sad":
-
-    #elif emotion == "angry":
-
-    #elif emotion == "neutral":
-
-
-#function to display the maze on the screen
-def display_maze(maze_txt):
-    running = True
 
 def main_screen():
     """Display the main screen with emojis"""
@@ -212,22 +173,20 @@ def main_screen():
 
         for event in pygame.event.get():
             if event.type == KEYDOWN and event.key == K_ESCAPE:
-                running = False
+                pygame.quit()
+                sys.exit()
             elif event.type == QUIT:
-                running = False
+                pygame.quit()
+                sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, happy_rect):
-                    #display_message("Happy")
-                    create_maze("happy")
+                    main_game("happy")
                 elif is_over(mouse_pos, sad_rect):
-                    display_message("Sad")
-                    #create_maze("sad")
+                    main_game("sad")
                 elif is_over(mouse_pos, angry_rect):
-                    display_message("Angry")
-                    #create_maze("angry")
+                    main_game("angry")
                 elif is_over(mouse_pos, neutral_rect):
-                    display_message("Neutral")
-                    #create_maze("neutral")
+                    main_game("neutral")
 
         # Fill the screen with the background image
         background_image = pygame.image.load("Graphics/bg1.png")
@@ -287,8 +246,10 @@ def main_screen():
         # Update the display
         pygame.display.flip()
 
+# Define the display_message function
 def display_message(message):
     """Display the message screen with a back button"""
+    global back_rect
     running = True
     while running:
         mouse_pos = pygame.mouse.get_pos()
@@ -304,6 +265,7 @@ def display_message(message):
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, back_rect):
                     running = False
+                    main_screen()
 
         # Background
         screen.fill(white)
