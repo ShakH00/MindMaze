@@ -13,6 +13,31 @@ pygame.display.set_caption("MindMaze: The Emotional Odyssey")
 
 white = (255, 255, 255)
 black = (0, 0, 0)
+TILE_SIZE = 64
+WIDTH = TILE_SIZE*8
+HEIGHT = TILE_SIZE*8
+player = pygame.image.load("Graphics/player.png")
+playerX = 1*TILE_SIZE
+playerY = 1*TILE_SIZE
+tile_options = ['empty','wall','endgoal']
+rows, cols = (15, 15)
+maze = [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+]
 
 # Emojis
 emoji_happy = pygame.image.load("Graphics/emoji_happy.png")
@@ -52,28 +77,30 @@ def is_over(pos, rect):
 #algorithm used for generating maze levels
 def create_maze(emotion):
     running = True
-    #lines 56-67 are the base code for generating the outer walls of any maze.
-    str_maze = ""
-    for i in range(35):
-        str_maze += "#"
-    str_maze += "\n"
-    for x in range(15):
-        str_maze += "#"
-        for z in range(33):
-            str_maze += " "
-        str_maze += "#"
-        str_maze += "\n"
-    for j in range(35):
-        str_maze += "#"
-    if emotion == "happy":
+    print("A")
+    screen.fill(white)
+    print("E")
+    for row in range(len(maze)):
+        for column in range(len(maze[row])):
+            x = column * TILE_SIZE
+            y = row * TILE_SIZE
+            if maze[row][column] == 1:
+                screen.blit(pygame.image.load("Graphics/wall.png"), (x, y))
+            elif maze[row][column] == 0:
+                screen.blit(pygame.image.load("Graphics/empty.png"), (x, y))
+            elif maze[row][column] == 2:
+                screen.blit(pygame.image.load("Graphics/endgoal.png"), (x, y))
+            #tile = tile_options[maze[row][column]]
+            #screen.blit(pygame.image.load(f"Graphics/{tile}.png"), (x, y))
+    screen.blit(player,(playerX,playerY))
+    #if emotion == "happy":
 
-    elif emotion == "sad":
+    #elif emotion == "sad":
 
-    elif emotion == "angry":
+    #elif emotion == "angry":
 
-    elif emotion == "neutral":
+    #elif emotion == "neutral":
 
-    display_maze(str_maze)
 
 #function to display the maze on the screen
 def display_maze(maze_txt):
@@ -93,13 +120,17 @@ def main_screen():
                 running = False
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(mouse_pos, happy_rect):
-                    display_message("Happy")
+                    #display_message("Happy")
+                    create_maze("happy")
                 elif is_over(mouse_pos, sad_rect):
                     display_message("Sad")
+                    create_maze("sad")
                 elif is_over(mouse_pos, angry_rect):
                     display_message("Angry")
+                    create_maze("angry")
                 elif is_over(mouse_pos, neutral_rect):
                     display_message("Neutral")
+                    create_maze("neutral")
 
         # Fill the screen with the background image
         background_image = pygame.image.load("Graphics/bg.jpg")
