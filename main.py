@@ -260,7 +260,7 @@ def main_game(level):
             elif level == "angry":
                 angry_msg = "Anger is like a storm, it's powerful but can be managed.\nTake deep breaths or talk with a trusted adult to help let out some anger!"
                 link_text = "Here is a short video for you"
-                angry_link = "https://shorturl.at/QGBwl"
+                angry_link = "https://drive.google.com/file/d/1HvuvhV29SgwE8_00a5hHssPB0iAvHSJN/view?usp=sharing"
                 display_message(angry_msg, link_text, angry_link, "angry")
                 return
 
@@ -287,22 +287,22 @@ def main_game(level):
                 link_text = "Here is a short video for you"
                 if level == "happy":
                     happy_msg = "Happiness is like sunshine, it brightens your day and everyone around you.\nKeep doing the things that make you happy"
-                    happy_link = "https://shorturl.at/10stS"
+                    happy_link = "https://drive.google.com/file/d/1qQIMfHO4_dH-inJLvX-mVAW7KLDQDRoz/view?usp=sharing"
                     display_message(happy_msg, link_text, happy_link, "happy")
 
                 if level == "sad":
                     sad_msg = "If you're ever unhappy, remember that you can find your sunshine again!\nDon't be afraid to reach out to a trusted adult!"
-                    sad_link = "https://shorturl.at/mIjnO"
+                    sad_link = "https://drive.google.com/file/d/1WSW0pdVoEk7H0bhKAePfGI2K-JYywBzT/view?usp=sharing"
                     display_message(sad_msg, link_text, sad_link, "sad")
 
                 if level == "angry":
                     angry_msg = "Anger is like a storm, it's powerful but can be managed.\nTake deep breaths or talk with a trusted adult to help let out some anger!"
-                    angry_link = "https://shorturl.at/QGBwl"
+                    angry_link = "https://drive.google.com/file/d/1HvuvhV29SgwE8_00a5hHssPB0iAvHSJN/view?usp=sharing"
                     display_message(angry_msg, link_text, angry_link, "angry")
 
                 if level == "neutral":
                     neutral_msg = "Sometimes our feelings are like calm waters, just steady and smooth.\nThat's perfectly okay."
-                    neutral_link = "https://shorturl.at/IUkb9"
+                    neutral_link = "https://drive.google.com/file/d/1OZyp5NYyxmFoasprkqPcEIQuN8KXCT5Q/view?usp=sharing"
                     display_message(neutral_msg, link_text, neutral_link, "neutral")
                 return
 
