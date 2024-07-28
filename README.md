@@ -46,10 +46,7 @@
 ## **Maze Completion**
  - Upon completing the mazes a message is shown to the user which validates their feelings
 
-![neutral-done-crop](https://github.com/user-attachments/assets/afaf02f2-9cd3-4852-a69a-35f52a6ec59f)
-![happy-done-crop](https://github.com/user-attachments/assets/939da6af-d4e9-49b2-9998-7241cac5fbb7)
-![anger-done-crop](https://github.com/user-attachments/assets/ed2247a9-2bdf-4e78-80b8-a2c018b50e16)
-![sad-done-crop](https://github.com/user-attachments/assets/1229bbe7-89b8-4728-b0c3-554338af0655)
-
-
-
+![sad-done-crop](https://github.com/user-attachments/assets/85720681-eb57-42f3-9981-920411a4f06e)
+![neutral-done-crop](https://github.com/user-attachments/assets/522e81a1-a734-4b4e-bfa9-e64e8280d524)
+![happy-done-crop](https://github.com/user-attachments/assets/05d03f37-8a75-47f8-869f-e56baa472424)
+![anger-done-crop](https://github.com/user-attachments/assets/1da6b414-2e65-4d22-8734-830bd898de51)
