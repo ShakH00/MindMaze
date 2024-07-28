@@ -177,27 +177,28 @@ def main_screen():
         # Draw text img
         screen.blit(feeling_image, feeling_image_rect)
 
-        # Draw emojis and get their rectangles
-        happy_rect = screen.blit(emoji_happy, emoji_positions["happy"])
-        sad_rect = screen.blit(emoji_sad, emoji_positions["sad"])
-        angry_rect = screen.blit(emoji_angry, emoji_positions["angry"])
-        neutral_rect = screen.blit(emoji_neutral, emoji_positions["neutral"])
-
         # Calculate the box dimensions around all emojis
         box_left = emoji_positions["happy"][0] - 50
         box_top = emoji_positions["happy"][1] - 18
         box_width = emoji_positions["neutral"][0] + emoji_size[0] + 50 - box_left
         box_height = emoji_size[1] + 60
 
-        # Draw the big box around all emojis
-        pygame.draw.rect(screen, black, (box_left, box_top, box_width, box_height), 3, border_radius=30)
+        # Draw the filled grey box around all emojis
+        pygame.draw.rect(screen, (169, 169, 169), (box_left, box_top, box_width, box_height), border_radius=30)
+        # Draw the black border around the grey box
+        pygame.draw.rect(screen, "black", (box_left, box_top, box_width, box_height), 3, border_radius=30)
+
+        # Draw emojis and get their rectangles
+        happy_rect = screen.blit(emoji_happy, emoji_positions["happy"])
+        sad_rect = screen.blit(emoji_sad, emoji_positions["sad"])
+        angry_rect = screen.blit(emoji_angry, emoji_positions["angry"])
+        neutral_rect = screen.blit(emoji_neutral, emoji_positions["neutral"])
 
         # Draw emotion texts under emojis
         screen.blit(font_tiny.render("Happy", True, black), (emoji_positions["happy"][0] + (emoji_size[0] // 2 - font_tiny.render("Happy", True, black).get_width() // 2), emoji_positions["happy"][1] + emoji_size[1] + 5))
         screen.blit(font_tiny.render("Sad", True, black), (emoji_positions["sad"][0] + (emoji_size[0] // 2 - font_tiny.render("Sad", True, black).get_width() // 2), emoji_positions["sad"][1] + emoji_size[1] + 5))
         screen.blit(font_tiny.render("Angry", True, black), (emoji_positions["angry"][0] + (emoji_size[0] // 2 - font_tiny.render("Angry", True, black).get_width() // 2), emoji_positions["angry"][1] + emoji_size[1] + 5))
         screen.blit(font_tiny.render("Neutral", True, black), (emoji_positions["neutral"][0] + (emoji_size[0] // 2 - font_tiny.render("Neutral", True, black).get_width() // 2), emoji_positions["neutral"][1] + emoji_size[1] + 5))
-
 
         # Check if the mouse is over any emoji and change the cursor to a pointer
         if is_over(mouse_pos, happy_rect) or is_over(mouse_pos, sad_rect) or is_over(mouse_pos, angry_rect) or is_over(mouse_pos, neutral_rect):
