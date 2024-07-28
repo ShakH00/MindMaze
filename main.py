@@ -67,6 +67,8 @@ blue = (0, 0, 255)
 
 # Load images
 player_img = pygame.image.load("Graphics/player.png")
+npc_img = pygame.image.load("Graphics/npc.png")
+key_img = pygame.image.load("Graphics/key.png")
 
 # Player settings
 player_size = 20
@@ -75,6 +77,13 @@ player_speed = 5
 
 # Define walls (list of rects)
 walls = []
+
+npc_pos = [screen_width // 2, screen_height // 2]
+npc_size = 40
+key_acquired = False
+npc_rect = pygame.Rect(npc_pos[0], npc_pos[1], npc_size, npc_size)
+npc_img = pygame.transform.scale(npc_img, (npc_size, npc_size))
+
 
 # Goal position
 goal_rect = pygame.Rect(screen_width - 60, screen_height - 60, 30, 30)
@@ -87,6 +96,8 @@ def randomize_walls(level):
     """Randomize walls based on difficulty level"""
     walls.clear()
     cell_size = 80 if level == "happy" else 60 if level == "neutral" else 40 if level == "sad" else 30 # Larger cell size for easier maze
+    #if level == "sad":
+
     cols, rows = screen_width // cell_size, screen_height // cell_size
 
     # Initialize grid and walls
@@ -154,11 +165,15 @@ def randomize_walls(level):
     draw_maze()
 
 def main_game(level):
-    global back_rect
+    global back_rect, key_acquired
     running = True
     clock = pygame.time.Clock()
     player_pos[:] = [10, 10]  # Reset player position
     randomize_walls(level)  # Randomize walls for the level
+
+    npc_pos = [screen_width // 2 - npc_size // 2, screen_height // 2 - npc_size // 2]
+    npc_rect = pygame.Rect(npc_pos[0], npc_pos[1], npc_size, npc_size)
+    key_acquired = False  # Track if key is acquired
 
     while running:
         for event in pygame.event.get():
@@ -194,6 +209,7 @@ def main_game(level):
         player_rect = pygame.Rect(new_pos[0], new_pos[1], player_size, player_size)
         collision = False
 
+
         for wall in walls:
             if player_rect.colliderect(wall):
                 collision = True
@@ -216,9 +232,17 @@ def main_game(level):
             if not any(player_rect.colliderect(wall) for wall in walls):
                 player_pos[1] = new_pos[1]
 
-        # Check for level completion
+        if level == "sad":
+            if player_rect.colliderect(npc_rect):
+                key_acquired = True
+
+            # Check for level completion
         if player_rect.colliderect(goal_rect):
-            display_message("You Win!")
+            if level == "sad" and not key_acquired:
+                display_message("You need a key to pass!")
+            else:
+                display_message("You Win!")
+                return
 
         # Drawing
         screen.blit(empty_background, (0, 0))
@@ -226,6 +250,9 @@ def main_game(level):
         for wall in walls:
             pygame.draw.rect(screen, black, wall)
         pygame.draw.rect(screen, (0, 255, 0), goal_rect)
+
+        if level == "sad":
+            screen.blit(npc_img, npc_pos)
 
         # Draw back button
         back_text = font_small.render("Back", True, black)
