@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 from pygame.locals import *
+from pyvidplayer2 import Video
 
 # Initialize Pygame
 pygame.init()
@@ -10,7 +11,7 @@ pygame.init()
 screen_width = 900
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-empty_background = pygame.image.load("Graphics/empty.png")
+empty_background = pygame.image.load("Graphics/empty.jpg")
 empty_background = pygame.transform.scale(empty_background, (screen_width, screen_height))
 pygame.display.set_caption("MindMaze: The Emotional Odyssey")
 
@@ -252,7 +253,7 @@ def main_game(level):
                 screen.blit(key_img, key_pos)
             #angry level means they win, the NPC is the way to exit
             elif level == "angry":
-                display_message("You Win!")
+                display_message("Anger is like a storm. Take deep breaths or talk with a trusted adult to help let out some anger!")
                 return
 
         # Check for level completion
@@ -273,7 +274,14 @@ def main_game(level):
                 clock.tick(60)
             #either its happy or neutral levels or its a sad level but they acquired the key
             else:
-                display_message("You Win!")
+                if level == "happy":
+                    display_message("Happiness is like sunshine, it brightens your day and everyone around you.")
+                if level == "sad":
+                    display_message("If you're ever unhappy don't be afraid to reach out to a trusted adult!")
+                if level == "angry":
+                    display_message("Anger is like a storm. Talk with a trusted adult to help let out some anger!")
+                if level == "neutral":
+                    display_message("Sometimes our feelings are like calm waters, just smooth. That's perfectly okay.")
                 return
 
         # Drawing
@@ -406,6 +414,12 @@ def display_message(message):
 
         # Background
         screen.fill(white)
+
+        # Display the message in the center of the screen
+        font_large = pygame.font.SysFont(None, 30)
+        text_surface = font_large.render(message, True, black)
+        text_rect = text_surface.get_rect(center=(screen_width // 2, screen_height // 2))
+        screen.blit(text_surface, text_rect)
 
         # Draw back button
         back_rect = pygame.Rect(800, 50, 100, 50)
