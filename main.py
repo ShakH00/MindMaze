@@ -58,9 +58,12 @@ font_small = pygame.font.SysFont(None, 40)
 font_tiny = pygame.font.SysFont(None, 30)
 
 # Render text
-title_text = font.render("MindMaze: The Emotional Odyssey", True, black)
 feeling_text = font_small.render("How are you feeling today?", True, black)
 welcome_text = font_tiny.render("Welcome to", True, black)
+
+# Load title image
+title_image = pygame.image.load("Graphics/title_image.png")
+title_image_rect = title_image.get_rect(center=(screen_width // 2, 110))
 
 # Emoji positions
 emoji_positions = {
@@ -136,10 +139,11 @@ def main_screen():
         background_image = pygame.image.load("Graphics/bg.jpg")
         screen.blit(background_image, (0, 0))
 
+        # Draw title image
+        screen.blit(title_image, title_image_rect)
+
         # Draw text
-        screen.blit(title_text, (screen_width // 2 - title_text.get_width() // 2, 110))
         screen.blit(feeling_text, (screen_width // 2 - feeling_text.get_width() // 2, 230))
-        screen.blit(welcome_text, (screen_width // 2 - welcome_text.get_width() // 2, 60))
 
         # Draw emojis and get their rectangles
         happy_rect = screen.blit(emoji_happy, emoji_positions["happy"])
