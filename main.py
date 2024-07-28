@@ -166,6 +166,9 @@ def main_game(level):
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                pygame.quit()
+                sys.exit()
             elif event.type == MOUSEBUTTONDOWN:
                 if is_over(pygame.mouse.get_pos(), back_rect):
                     main_screen()
@@ -173,35 +176,53 @@ def main_game(level):
 
         # Movement
         keys = pygame.key.get_pressed()
-        if keys[K_a] or keys[K_LEFT]:
-            player_pos[0] -= player_speed
-        if keys[K_d] or keys[K_RIGHT]:
-            player_pos[0] += player_speed
-        if keys[K_w] or keys[K_UP]:
-            player_pos[1] -= player_speed
-        if keys[K_s] or keys[K_DOWN]:
-            player_pos[1] += player_speed
+        x_change = 0
+        y_change = 0
 
-        # Collision detection with walls
-        player_rect = pygame.Rect(player_pos[0], player_pos[1], player_size, player_size)
+        if keys[K_a] or keys[K_LEFT]:
+            x_change = -player_speed
+        if keys[K_d] or keys[K_RIGHT]:
+            x_change = player_speed
+        if keys[K_w] or keys[K_UP]:
+            y_change = -player_speed
+        if keys[K_s] or keys[K_DOWN]:
+            y_change = player_speed
+
+        # Update player position and handle collisions
+        new_pos = player_pos.copy()
+        new_pos[0] += x_change
+        new_pos[1] += y_change
+
+        player_rect = pygame.Rect(new_pos[0], new_pos[1], player_size, player_size)
+        collision = False
+
         for wall in walls:
             if player_rect.colliderect(wall):
-                if keys[K_a] or keys[K_LEFT]:
-                    player_pos[0] += player_speed
-                if keys[K_d] or keys[K_RIGHT]:
-                    player_pos[0] -= player_speed
-                if keys[K_w] or keys[K_UP]:
-                    player_pos[1] += player_speed
-                if keys[K_s] or keys[K_DOWN]:
-                    player_pos[1] -= player_speed
+                collision = True
+                break
+
+        if not collision:
+            player_pos[:] = new_pos
+        else:
+            if x_change != 0:
+                new_pos = player_pos.copy()
+                new_pos[0] += x_change
+                player_rect = pygame.Rect(new_pos[0], player_pos[1], player_size, player_size)
+                if not any(player_rect.colliderect(wall) for wall in walls):
+                    player_pos[0] = new_pos[0]
+
+        if y_change != 0:
+            new_pos = player_pos.copy()
+            new_pos[1] += y_change
+            player_rect = pygame.Rect(player_pos[0], new_pos[1], player_size, player_size)
+            if not any(player_rect.colliderect(wall) for wall in walls):
+                player_pos[1] = new_pos[1]
 
         # Check for level completion
         if player_rect.colliderect(goal_rect):
             display_message("You Win!")
-            return
 
         # Drawing
-
         screen.blit(empty_background, (0, 0))
         pygame.draw.rect(screen, blue, player_rect)
         for wall in walls:
