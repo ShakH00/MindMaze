@@ -70,7 +70,7 @@ player_img = pygame.image.load("Graphics/player.png")
 
 # Player settings
 player_size = 20
-player_pos = [50, 50]
+player_pos = [0, 0]
 player_speed = 5
 
 # Define walls (list of rects)
@@ -86,7 +86,7 @@ def is_over(pos, rect):
 def randomize_walls(level):
     """Randomize walls based on difficulty level"""
     walls.clear()
-    cell_size = 40  # Size of each cell in the grid
+    cell_size = 80 if level == "happy" else 60 if level == "neutral" else 40 if level == "sad" else 30 # Larger cell size for easier maze
     cols, rows = screen_width // cell_size, screen_height // cell_size
 
     # Initialize grid and walls
@@ -158,7 +158,7 @@ def main_game(level):
     global back_rect
     running = True
     clock = pygame.time.Clock()
-    player_pos[:] = [50, 50]  # Reset player position
+    player_pos[:] = [10, 10]  # Reset player position
     randomize_walls(level)  # Randomize walls for the level
 
     while running:
