@@ -116,17 +116,21 @@ def create_maze(emotion):
 
 
                 if(event.key == pygame.K_RIGHT or event.key == pygame.K_d):
-                    playerX += 64
-                    cur_col += 1
+                    if(cur_col+1 <= 10):
+                        playerX += 64
+                        cur_col = cur_col+1
                 elif(event.key == pygame.K_LEFT or event.key == pygame.K_a):
-                    x_change = -64
-                    cur_col -= 1
+                    if (cur_col - 1 >= 0):
+                        x_change = -64
+                        cur_col = cur_col - 1
                 elif(event.key == pygame.K_UP or event.key == pygame.K_w):
-                    y_change = -64
-                    row -= 1
+                    if (cur_row - 1 >= 0):
+                        y_change = -64
+                        cur_row = cur_row - 1
                 elif(event.key == pygame.K_DOWN or event.key == pygame.K_s):
-                    y_change = 64
-                    row += 1
+                    if (cur_row + 1 <= 10):
+                        y_change = 64
+                        cur_row = cur_row+ 1
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_d or event.key == pygame.K_a:
                     x_change = 0
@@ -134,11 +138,16 @@ def create_maze(emotion):
                     y_change = 0
         playerX += x_change
         playerY += y_change
-        tileChosen = tile_options[maze[cur_row,cur_col]]
-        if tileChosen == 'empty':
+        if maze[cur_row][cur_col] == 4:
             screen.blit(player, (playerX, playerY))
-        elif tileChosen == 'endgoal':
-            print("COMPLETED!")
+        else:
+            tileChosen = tile_options[maze[cur_row][cur_col]]
+            if tileChosen == 'empty':
+                screen.blit(player, (playerX, playerY))
+            elif tileChosen == 'endgoal':
+                print("COMPLETED!")
+            elif tileChosen == 'wall':
+                print("WALL!")
 
 
         pygame.display.flip()
