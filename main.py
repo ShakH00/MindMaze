@@ -49,6 +49,14 @@ def is_over(pos, rect):
     """Check if the mouse is over a given rectangle"""
     return rect.collidepoint(pos)
 
+#algorithm used for generating maze levels
+def create_maze(emotion):
+    running = True
+
+#function to display the maze on the screen
+def display_maze(maze_txt):
+    running = True
+
 def main_screen():
     """Display the main screen with emojis"""
     running = True
